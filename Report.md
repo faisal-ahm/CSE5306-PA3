@@ -1,3 +1,3 @@
-# Project Report: Two-Phase Commit & Raft Consensus Integration
+# Project Report – CSE5306 PA3
 
-This is a placeholder report. Replace with full academic content later.
+(placeholder full academic content – regenerate with full details as discussed)

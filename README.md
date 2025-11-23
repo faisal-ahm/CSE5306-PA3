@@ -1,3 +1,3 @@
-# CSE5306-PA3: Two-Phase Commit & Raft Integration
+# CSE5306 PA3 – Distributed Systems: 2PC + Raft Integration
 
-This is a placeholder README. Replace with full content later.
+(placeholder full content – regenerate with full details as discussed)
