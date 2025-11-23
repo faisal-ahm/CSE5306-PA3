@@ -1,303 +1,159 @@
-# CSE5306 PA3: Full Technical Report  
-## Fault Tolerance Using Two‑Phase Commit and Raft  
-Author: Faisal Ahmad  
-Professor/Supervisor: Dr. Jiayi Meng
-
----
-
-# Abstract
-
-This report documents the design, implementation, and evaluation of fault‑tolerant coordination protocols—**Two‑Phase Commit (2PC)** and **Raft consensus**—integrated onto an existing distributed polling system originally developed for PA2.
-
-The project goals included:
-
-- Implementing 2PC (voting + decision phases)
-- Implementing Raft (leader election + log replication)
-- Integrating each mechanism into the poll creation workflow
-- Demonstrating real distributed behavior through five test cases
-- Running fully containerized multi-node clusters
-
-This report describes architecture, algorithms, design decisions, system behavior, and evaluation.
+# CSE5306 PA3 — Fault‑Tolerant Extensions Using 2PC and Raft  
+**Student ID:** 1002239354  
 
 ---
 
 # 1. Introduction
-
-Distributed systems require coordination guarantees across multiple nodes. PA3 focuses on implementing two major coordination paradigms:
-
-1. **Two‑Phase Commit** – a blocking atomic commit protocol
-2. **Raft** – a replicated state machine consensus algorithm
-
-Both were implemented independently and integrated into the same base REST project.
-
-The base project was a polling application that supported:  
-- Creating polls  
-- Voting on polls  
-- Closing polls  
-- Viewing results
-
-PA3 modifies the **poll creation** path to involve fault‑tolerant coordination.
+This report documents the design and implementation of Two‑Phase Commit (2PC) and Raft consensus algorithms added to the base distributed polling system from CSE5306 Project 2. The work extends a REST‑based polling backend with two independent fault‑tolerance mechanisms.
 
 ---
 
-# 2. Architecture
+# 2. Original Base Project
+Summary of base project:
+- REST API implemented using Hono (Node.js)
+- Stateless backend containers (api1, api2)
+- PostgreSQL single database instance
+- Nginx load balancer in front of APIs
+- Standard CRUD for polls and votes
 
-## 2.1 Original System (PA2)
-The original REST project contains:
-
-```
-api/               – Node.js Hono API
-frontend/          – React app served by nginx
-database/          – PostgreSQL
-nginx/             – Load balancer
-```
-
-This architecture runs multiple API replicas behind a load balancer to simulate distributed behavior.
+The base system had **no fault‑tolerant write mechanism**. Both 2PC and Raft implementations extend the **CreatePoll** path only.
 
 ---
 
-# 3. 2PC Implementation
+# 3. Two‑Phase Commit (Q2)
 
-## 3.1 Architecture
+## 3.1 System Architecture
+The 2PC version adds:
+- One Coordinator (inside `api/`)
+- Four Participant Nodes (`two_pc_participant/`)
+- gRPC communication via `two_pc.proto`
 
-```
-Coordinator (1)
-Participants (4)
-```
+Data flow for `/polls`:
+1. API receives poll creation request
+2. API starts a 2PC transaction:
+   - Sends `RequestVote` to all participants
+   - If all vote YES → send `SendDecision(COMMIT)`
+   - Else → `SendDecision(ABORT)`
+3. API writes poll to DB only after COMMIT
 
-Each participant has its own PostgreSQL database, and each is containerized:
-
-```
-two_pc/
- ├── coordinator/
- ├── participant1/
- ├── participant2/
- ├── participant3/
- ├── participant4/
- ├── proto/two_pc.proto
- └── docker-compose.yml
-```
-
-## 3.2 Voting Phase (Q1)
-
-Coordinator sends:
-
-```
-RequestVote → participant
-```
-
-Participant responds:
-
-```
-VoteCommit OR VoteAbort
-```
-
-All RPCs print:
-
-```
-Phase Voting of Node X sends RPC RequestVote to Node Y
-Phase Voting of Node Y runs RPC RequestVote called by Node X
-```
-
-## 3.3 Decision Phase (Q2)
-
-If all participants vote commit:
-
-```
-GlobalCommit
-```
-
-Else:
-
-```
-GlobalAbort
-```
-
-API creates the poll only if global commit succeeds.
+This ensures atomicity.
 
 ---
 
-# 4. Raft Implementation
+# 4. Raft Leader Election (Q3)
 
 ## 4.1 Architecture
-
+Implemented in:
 ```
-5 Raft nodes (raft1–raft5)
-API acts as a Raft client
+base_rest_raft/raft_node/src/server.ts
 ```
 
-Each Raft node maintains:
+Each of 5 Raft nodes:
+- Starts as follower
+- Waits randomized 1.5–3.0s election timeout
+- If no heartbeat → becomes candidate
+- Increments term
+- Votes for itself
+- Broadcasts RequestVote to peers
+- If receives majority → becomes leader
+- Sends heartbeat every 1s
 
-- Current term
-- VotedFor
-- Log entries
-- Commit index
-- Applied index
-- Role (follower/candidate/leader)
-
-Network is defined in docker-compose.yml.
+The API communicates with Raft using the entry node.
 
 ---
 
-## 4.2 Leader Election (Q3)
+# 5. Raft Log Replication (Q4)
 
-Election timeout:
+## 5.1 Operation Flow
+When a client creates a poll:
+1. API sends `HandleClient` RPC to Raft
+2. If caller is not leader → leader redirect
+3. Leader:
+   - Appends log entry (`CREATE_POLL`)
+   - Sends AppendEntries (log + commitIndex)
+4. Followers:
+   - Overwrite log with leader’s log
+   - Apply committed entries
+5. Leader updates commit index immediately (simplification per assignment)
+6. API writes poll to DB after commit
 
-```
-1.5s – 3.0s randomized
-```
-
-Heartbeat timeout:
-
-```
-1.0s (fixed)
-```
-
-Election flow:
-
-1. Follower timeout → becomes candidate  
-2. Candidate increments term  
-3. Sends RequestVote to all peers  
-4. If majority votes → becomes leader  
-
-Log prints:
-
-```
-[raft-node-3] Starting election: term 8
-[raft-node-3] Became leader for term 8
-```
+This satisfies Q4 requirements.
 
 ---
 
-## 4.3 Log Replication (Q4)
+# 6. Test Cases (Q5)
 
-When API sends CREATE_POLL:
-
-1. Request is forwarded to leader  
-2. Leader appends log entry  
-3. On next heartbeat: leader sends entire log  
-4. Followers replicate & ACK  
-5. Once majority ACK → commit  
-
-Followers print:
-
+All logs are stored in:
 ```
-Applying log index=3 term=1 op=CREATE_POLL
+base_rest_raft/logs/
 ```
+
+### Test Case 1 — Normal Operations  
+- Start cluster normally  
+- Submit poll  
+- Leader receives operation, replicates, commits  
 
 ---
 
-# 5. Integration with Base REST API
-
-## 5.1 2PC Integration
-
-Before inserting poll into DB:
-
-```
-const tx = await twoPc.runTwoPhaseCommit();
-if (!tx.ok) return error("2PC failed");
-```
-
-## 5.2 Raft Integration
-
-API contacts Raft entry node:
-
-```
-const raftRes = await raftCreatePoll(question, options);
-```
-
-If redirected:
-
-```
-Raft client: redirecting request to leader raft-node-3
-```
-
-Then inserts poll locally once committed.
+### Test Case 2 — Leader Crash  
+- Identify leader using logs  
+- `docker compose stop raftX`  
+- Observe election timeout  
+- New leader chosen  
+- Submit poll → success  
 
 ---
 
-# 6. Testing (Q5)
-
-Five test cases were developed and documented. Logs included in `test_cases/`.
-
-## Test 1 – Normal Operation
-
-- All nodes active  
-- Single poll created  
-- Leader elected reliably  
-- Log replicated across cluster  
-
-## Test 2 – Leader Crash
-
-- Identify leader via logs  
-- Stop the leader container  
-- New leader elected  
-- Poll still committed  
-
-## Test 3 – Follower Recovery
-
-- Stop follower node  
-- Poll still succeeds  
-- Restart follower → catches up via AppendEntries  
-
-## Test 4 – Concurrent Requests
-
-- Rapid polling using multiple curl commands  
-- Leader serializes operations  
-- Logs replicated correctly  
-
-## Test 5 – New Node Join
-
-- Remove raft5 container volume  
-- Recreate with empty state  
-- Node synchronizes log on startup  
+### Test Case 3 — Follower Recovery  
+- Stop follower  
+- Leader continues  
+- Restart follower  
+- Leader sends AppendEntries  
+- Log catches up  
 
 ---
 
-# 7. Analysis & Insights
-
-### 2PC
-- Simple but blocking
-- Coordinator crash → stalls cluster
-- Works reliably for simple “all-or-nothing” workflow
-
-### Raft
-- More complex
-- True fault tolerance: cluster survives up to 2 failures
-- Log replication ensures deterministic state
-
-### Combined
-We achieved:
-- 2PC for atomic commit
-- Raft for replicated consensus
-- Both integrated with the REST polling application
+### Test Case 4 — Concurrent Poll Creation  
+- Rapid `curl` requests  
+- Log shows proper ordering and replication  
 
 ---
 
-# 8. Conclusion
-
-This project fully satisfies PA3 requirements:
-
-- Implemented **2PC voting & decision**
-- Implemented **Raft leader election & log replication**
-- Integrated both into a real distributed application
-- Produced 5 documented test scenarios with logs
-- Provided a complete multi-container distributed system
-
-The final system demonstrates deep understanding of distributed coordination algorithms and practical implementation in a real service architecture.
+### Test Case 5 — New Node Joining  
+- `docker compose up -d raft5` after removal  
+- Node boots as follower  
+- Receives full log on heartbeat  
+- Catches up  
 
 ---
 
-# 9. Appendix
+# 7. Directory Structure Summary
+Full structure included exactly as submitted (see appendix in repo).
 
-## 9.1 Example Curl Command
+---
 
+# 8. Implementation Notes and Challenges
+- Election storms occurred early due to short initial timeouts
+- Fixed by implementing correct timeout randomization
+- Database commits triggered only on successful Raft commit
+- 2PC path isolated and independent from Raft path
+
+---
+
+# 9. Conclusion
+This project successfully implemented:
+- A fully working 2PC protocol  
+- A fully working Raft cluster with leader election  
+- A log replication system  
+- Integration of consensus mechanisms into the existing REST stack  
+- Five documented test cases verifying correctness  
+
+All requirements for Q2–Q5 were satisfied.
+
+---
+
+# Appendix: Log Files
+Located in:
 ```
-curl -X POST http://localhost:3005/polls -H "Content-Type: application/json" -d "{"question":"Raft test?","options":["yes","no"]}"
-```
-
-## 9.2 Detecting leader
-
-```
-docker compose logs raft1 raft2 raft3 raft4 raft5 | findstr "Became leader"
+base_rest_raft/logs/
 ```
