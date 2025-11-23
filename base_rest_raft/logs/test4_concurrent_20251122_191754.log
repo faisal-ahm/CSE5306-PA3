@@ -1,32 +1,0 @@
-[TC4] Multiple back-to-back client polls (log ordering test)
-[TC4] Log file: logs\test4_concurrent_20251122_191754.log
-
-[TC4] Creating poll 1 ...
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   180  100   130  100    50   4190   1611 --:--:-- --:--:-- --:--:--  6000
-{"id":13,"question":"TC4: poll 1?","options":["yes","no"],"isActive":true,"createdAt":"2025-11-23T01:17:54.578Z","raftLogIndex":5}
-[TC4] Creating poll 2 ...
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   180  100   130  100    50   3199   1230 --:--:-- --:--:-- --:--:--  4500
-{"id":14,"question":"TC4: poll 2?","options":["yes","no"],"isActive":true,"createdAt":"2025-11-23T01:17:54.700Z","raftLogIndex":6}
-[TC4] Creating poll 3 ...
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   180  100   130  100    50  10836   4168 --:--:-- --:--:-- --:--:-- 16363
-{"id":15,"question":"TC4: poll 3?","options":["yes","no"],"isActive":true,"createdAt":"2025-11-23T01:17:54.799Z","raftLogIndex":7}
-[TC4] Creating poll 4 ...
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   180  100   130  100    50   6511   2504 --:--:-- --:--:-- --:--:--  9473
-{"id":16,"question":"TC4: poll 4?","options":["yes","no"],"isActive":true,"createdAt":"2025-11-23T01:17:54.881Z","raftLogIndex":8}
-[TC4] Creating poll 5 ...
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   180  100   130  100    50   9690   3727 --:--:-- --:--:-- --:--:-- 13846
-{"id":17,"question":"TC4: poll 5?","options":["yes","no"],"isActive":true,"createdAt":"2025-11-23T01:17:54.978Z","raftLogIndex":9}
-[TC4] Now check logs on leader and follower for sequential log indexes.
-[TC4] Example:
-  docker compose logs raft3 --tail=80
-  docker compose logs raft4 --tail=80

@@ -1,0 +1,24 @@
+[TC3] Follower crash and recovery (log catch-up)
+[TC3] Using follower service: raft4
+[TC3] Log file: logs\test3_follower_recovery_20251123_173814.log
+
+[TC3] Stopping follower: raft4 ...
+ Container raft_node4  Stopping
+ Container raft_node4  Stopped
+
+[TC3] Creating 2 polls while follower is DOWN...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   202  100   141  100    61   3615   1564 --:--:-- --:--:-- --:--:--  5315
+{"id":29,"question":"TC3: while raft4 down 1","options":["yes","no"],"isActive":true,"createdAt":"2025-11-23T23:38:15.977Z","raftLogIndex":5}  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   202  100   141  100    61   7856   3399 --:--:-- --:--:-- --:--:-- 11882
+{"id":30,"question":"TC3: while raft4 down 2","options":["yes","no"],"isActive":true,"createdAt":"2025-11-23T23:38:16.032Z","raftLogIndex":6}
+[TC3] Starting follower again: raft4 ...
+ Container raft_node4  Starting
+ Container raft_node4  Started
+
+[TC3] Waiting 5 seconds for it to receive AppendEntries...
+
+[TC3] Now manually run: docker compose logs raft4 --tail=80
+[TC3] Look for: Applying log index=... op=CREATE_POLL

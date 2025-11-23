@@ -1,6 +1,6 @@
 [TC2] Leader crash and re-election test
 [TC2] Using assumed leader service: raft3
-[TC2] Log file: logs\test2_leader_crash_20251122_191720.log
+[TC2] Log file: logs\test2_leader_crash_20251123_173655.log
 
 [TC2] Stopping leader container: raft3 ...
  Container raft_node3  Stopping
@@ -10,13 +10,13 @@
 curl -X POST http://localhost:3005/polls ...
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   204  100   142  100    62   2136    932 --:--:-- --:--:-- --:--:--  3090
-{"id":11,"question":"TC2: after leader crash?","options":["yes","no"],"isActive":true,"createdAt":"2025-11-23T01:17:22.219Z","raftLogIndex":3}
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   204  100   142  100    62   5061   2210 --:--:-- --:--:-- --:--:--  7285
+{"id":27,"question":"TC2: after leader crash?","options":["yes","no"],"isActive":true,"createdAt":"2025-11-23T23:36:56.278Z","raftLogIndex":3}
 [TC2] Waiting 5 seconds for re-election...
 
 [TC2] Trying again after re-election...
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   202  100   141  100    61   5581   2414 --:--:-- --:--:-- --:--:--  8080
-{"id":12,"question":"TC2: after re-election?","options":["yes","no"],"isActive":true,"createdAt":"2025-11-23T01:17:27.224Z","raftLogIndex":4}
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   202  100   141  100    61   6026   2607 --:--:-- --:--:-- --:--:--  8782
+{"id":28,"question":"TC2: after re-election?","options":["yes","no"],"isActive":true,"createdAt":"2025-11-23T23:37:01.311Z","raftLogIndex":4}
 [TC2] Now check raft node logs for a new leader being elected.

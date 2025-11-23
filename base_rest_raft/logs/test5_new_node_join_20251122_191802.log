@@ -1,27 +1,0 @@
-[TC5] New node entering the system (late-joining Raft node)
-[TC5] Using node: raft5
-[TC5] Log file: logs\test5_new_node_join_20251122_191802.log
-
-[TC5] Stopping raft5 so it is OUT of the cluster...
- Container raft_node5  Stopping
- Container raft_node5  Stopped
-
-[TC5] Creating 3 polls while raft5 is down...
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   205  100   143  100    62   8816   3822 --:--:-- --:--:-- --:--:-- 12812
-{"id":18,"question":"TC5: before raft5 join 1","options":["yes","no"],"isActive":true,"createdAt":"2025-11-23T01:18:03.863Z","raftLogIndex":10}  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   205  100   143  100    62  10336   4481 --:--:-- --:--:-- --:--:-- 15769
-{"id":19,"question":"TC5: before raft5 join 2","options":["yes","no"],"isActive":true,"createdAt":"2025-11-23T01:18:03.922Z","raftLogIndex":11}  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   205  100   143  100    62   7063   3062 --:--:-- --:--:-- --:--:-- 10250
-{"id":20,"question":"TC5: before raft5 join 3","options":["yes","no"],"isActive":true,"createdAt":"2025-11-23T01:18:03.978Z","raftLogIndex":12}
-[TC5] Starting raft5 back (late join)...
- Container raft_node5  Starting
- Container raft_node5  Started
-
-[TC5] Waiting 5 seconds for it to sync logs via AppendEntries...
-
-[TC5] Now manually run: docker compose logs raft5 --tail=100
-[TC5] Look for: Applying log index=1..3 op=CREATE_POLL
