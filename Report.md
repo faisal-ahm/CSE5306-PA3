@@ -93,6 +93,9 @@ base_rest_raft/logs/
 - Submit poll  
 - Leader receives operation, replicates, commits  
 
+**Output**
+![Test 1 Log](screenshots/test1_log.jpg)
+
 ---
 
 ### Test Case 2 — Leader Crash  
@@ -101,6 +104,8 @@ base_rest_raft/logs/
 - Observe election timeout  
 - New leader chosen  
 - Submit poll → success  
+
+![Test 2 Log](screenshots/test2_log.jpg)
 
 ---
 
@@ -111,11 +116,17 @@ base_rest_raft/logs/
 - Leader sends AppendEntries  
 - Log catches up  
 
+![Test 3 Log](screenshots/test3_log.jpg)
+
+
 ---
 
 ### Test Case 4 — Concurrent Poll Creation  
 - Rapid `curl` requests  
 - Log shows proper ordering and replication  
+
+![Test 4 Log](screenshots/test4_log.jpg)
+
 
 ---
 
@@ -124,6 +135,9 @@ base_rest_raft/logs/
 - Node boots as follower  
 - Receives full log on heartbeat  
 - Catches up  
+
+![Test 5 Log](screenshots/test5_log.jpg)
+
 
 ---
 
