@@ -25,7 +25,7 @@ This system consists of 5 nodes. A Frontend (React Application), a loadbalancer 
 1. **Open terminal and go to the project folder:**
 
    ```bash
-   cd rest_https
+   cd base_rest_2pc
    ```
 
 2. **Start all services:**
