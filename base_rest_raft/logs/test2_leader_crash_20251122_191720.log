@@ -1,0 +1,22 @@
+[TC2] Leader crash and re-election test
+[TC2] Using assumed leader service: raft3
+[TC2] Log file: logs\test2_leader_crash_20251122_191720.log
+
+[TC2] Stopping leader container: raft3 ...
+ Container raft_node3  Stopping
+ Container raft_node3  Stopped
+
+[TC2] Immediately trying to create a poll (may fail or be rejected)...
+curl -X POST http://localhost:3005/polls ...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   204  100   142  100    62   2136    932 --:--:-- --:--:-- --:--:--  3090
+{"id":11,"question":"TC2: after leader crash?","options":["yes","no"],"isActive":true,"createdAt":"2025-11-23T01:17:22.219Z","raftLogIndex":3}
+[TC2] Waiting 5 seconds for re-election...
+
+[TC2] Trying again after re-election...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   202  100   141  100    61   5581   2414 --:--:-- --:--:-- --:--:--  8080
+{"id":12,"question":"TC2: after re-election?","options":["yes","no"],"isActive":true,"createdAt":"2025-11-23T01:17:27.224Z","raftLogIndex":4}
+[TC2] Now check raft node logs for a new leader being elected.

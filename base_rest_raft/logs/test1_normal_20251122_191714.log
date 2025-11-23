@@ -1,0 +1,13 @@
+[TC1] Normal Raft operation: leader election + create poll
+[TC1] Log file: logs\test1_normal_20251122_191714.log
+
+[TC1] Creating poll via load balancer on :3005...
+curl -X POST http://localhost:3005/polls -H "Content-Type: application/json" -d "{\"question\":\"TC1: normal?\",\"options\":[\"yes\",\"no\"]}"
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   180  100   130  100    50   5195   1998 --:--:-- --:--:-- --:--:--  7500
+{"id":10,"question":"TC1: normal?","options":["yes","no"],"isActive":true,"createdAt":"2025-11-23T01:17:14.305Z","raftLogIndex":2}
+[TC1] Done. Check logs for leader election and log application.
+[TC1] Now you can run:
+  docker compose logs api1 --tail=40
+  docker compose logs raft3 --tail=80

@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package raft;
+
+// ==== Core types ====
+
+message LogEntry {
+  int64 index = 1;
+  int64 term = 2;
+  string operation = 3; // e.g., "CREATE_POLL"
+  string question = 4;
+  repeated string options = 5;
+}
+
+// For leader election
+
+message RequestVoteRequest {
+  string candidate_id = 1;
+  int64 term = 2;
+  int64 last_log_index = 3;
+  int64 last_log_term = 4;
+}
+
+message RequestVoteResponse {
+  string voter_id = 1;
+  int64 term = 2;
+  bool vote_granted = 3;
+}
+
+// For heartbeats + log replication
+
+message AppendEntriesRequest {
+  string leader_id = 1;
+  int64 term = 2;
+  repeated LogEntry log = 3;
+  int64 commit_index = 4;
+}
+
+message AppendEntriesResponse {
+  string follower_id = 1;
+  int64 term = 2;
+  bool success = 3;
+}
+
+// Client request: create poll
+
+message ClientRequest {
+  string node_id = 1; // the node that received client request
+  string operation = 2; // "CREATE_POLL"
+  string question = 3;
+  repeated string options = 4;
+}
+
+message ClientResponse {
+  bool accepted = 1;         // true if leader accepted & committed
+  string leader_id = 2;      // if this node is not leader, who is
+  string message = 3;
+  int64 log_index = 4;       // index of committed op (if any)
+}
+
+// ==== Services ====
+
+service RaftNode {
+  rpc RequestVote(RequestVoteRequest) returns (RequestVoteResponse);
+  rpc AppendEntries(AppendEntriesRequest) returns (AppendEntriesResponse);
+  rpc HandleClient(ClientRequest) returns (ClientResponse);
+}

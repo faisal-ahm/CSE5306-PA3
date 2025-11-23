@@ -1,0 +1,24 @@
+[TC3] Follower crash and recovery (log catch-up)
+[TC3] Using follower service: raft4
+[TC3] Log file: logs\test3_follower_recovery_20251122_191737.log
+
+[TC3] Stopping follower: raft4 ...
+ Container raft_node4  Stopping
+ Container raft_node4  Stopped
+
+[TC3] Creating 2 polls while follower is DOWN...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    61    0     0  100    61      0     50  0:00:01  0:00:01 --:--:--    50100    61    0     0  100    61      0     27  0:00:02  0:00:02 --:--:--    27100    61    0     0  100    61      0     18  0:00:03  0:00:03 --:--:--    18100    61    0     0  100    61      0     14  0:00:04  0:00:04 --:--:--    14100   187  100   126  100    61     24     12  0:00:05  0:00:05 --:--:--    37100   187  100   126  100    61     24     12  0:00:05  0:00:05 --:--:--    32
+{"error":"Raft cluster did not accept operation","details":"14 UNAVAILABLE: Name resolution failed for target dns:raft4:6000"}  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   158  100    97  100    61   4744   2983 --:--:-- --:--:-- --:--:--  7900
+{"error":"Raft cluster did not accept operation","details":"No leader elected yet","leaderId":""}
+[TC3] Starting follower again: raft4 ...
+ Container raft_node4  Starting
+ Container raft_node4  Started
+
+[TC3] Waiting 5 seconds for it to receive AppendEntries...
+
+[TC3] Now manually run: docker compose logs raft4 --tail=80
+[TC3] Look for: Applying log index=... op=CREATE_POLL

@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package two_pc;
+
+message TransactionPayload {
+  string tx_id = 1;
+  string operation = 2;
+  string question = 3;
+  repeated string options = 4;
+}
+
+message VoteRequest {
+  string from_node_id = 1;
+  string to_node_id = 2;
+  TransactionPayload payload = 3;
+}
+
+message VoteResponse {
+  string from_node_id = 1;
+  string to_node_id = 2;
+  bool vote_commit = 3;
+  string reason = 4;
+}
+
+message DecisionRequest {
+  string from_node_id = 1;
+  string to_node_id = 2;
+  string tx_id = 3;
+  bool global_commit = 4;
+}
+
+message DecisionResponse {
+  string from_node_id = 1;
+  string to_node_id = 2;
+  bool ack = 3;
+}
+
+service VotingPhase {
+  rpc RequestVote (VoteRequest) returns (VoteResponse);
+}
+
+service DecisionPhase {
+  rpc SendDecision (DecisionRequest) returns (DecisionResponse);
+}
