@@ -1,10 +1,15 @@
 # CSE5306 PA3 — Fault‑Tolerant Extensions Using 2PC and Raft  
+**Student Name:** Faisal Ahmad
 **Student ID:** 1002239354  
+**[Link to Project Repository](https://github.com/faisal-ahm/CSE5306-PA3)**
+
 
 ---
 
 # 1. Introduction
-This report documents the design and implementation of Two‑Phase Commit (2PC) and Raft consensus algorithms added to the base distributed polling system from CSE5306 Project 2. The work extends a REST‑based polling backend with two independent fault‑tolerance mechanisms.
+This report documents the design and implementation of Two‑Phase Commit (2PC) and Raft consensus algorithms added to the base distributed polling system from CSE5306 Project 2 (Made by Group-3). The work extends a REST‑based polling backend with two independent fault‑tolerance mechanisms.
+
+**[Link to Original Base Project Repository](https://github.com/CSE-5306-004-DISTRIBUTED-SYSTEMS/Project2)**
 
 ---
 
